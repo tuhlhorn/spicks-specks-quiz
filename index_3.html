@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spicks & Specks - Interactive Quiz</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap');
+        body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { Play, Users, Trophy, Clock, ChevronRight, Check, Volume2, Send, Copy, CheckCircle } = lucide;
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDwhaglPhs7KcKEEuKyjkPZDeYqW3lMBDA",
+            authDomain: "spicks-specks-quiz.firebaseapp.com",
+            databaseURL: "https://spicks-specks-quiz-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "spicks-specks-quiz",
+            storageBucket: "spicks-specks-quiz.firebasestorage.app",
+            messagingSenderId: "187006302593",
+            appId: "1:187006302593:web:030e06cf345974a5011080"
+        };
+
+        // Initialize Firebase (only once)
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        const QUIZ_DATA = {
+            rounds: [
+                {
+                    name: "Round 1: One-Hit Wonders",
+                    color: "#FF6B6B",
+                    questions: [
+                        {
+                            question: "Which band released 'You Get What You Give' in 1998, their only major hit?",
+                            options: ["New Radicals", "Semisonic", "Tal Bachman", "Eagle-Eye Cherry"],
+                            correct: 0,
+                            trivia: "The band broke up shortly after, despite the song's global success.",
+                            points: 1
+                        },
+                        {
+                            question: "'Bitch' was a 1997 smash hit for which American singer-songwriter?",
+                            options: ["Meredith Brooks", "Alanis Morissette", "Paula Cole", "Shawn Colvin"],
+                            correct: 0,
+                            trivia: "Brooks was often confused with Alanis because of the song's style and timing.",
+                            points: 1
+                        },
+                        {
+                            question: "Which 1996 one-hit wonder band released 'How Bizarre'?",
+                            options: ["Crash Test Dummies", "OMC", "Primitive Radio Gods", "EMF"],
+                            correct: 1,
+                            trivia: "OMC stood for 'Otara Millionaires Club', named after a suburb in Auckland, New Zealand.",
+                            points: 1
+                        },
+                        {
+                            question: "Which Canadian band scored a global hit with 'Steal My Sunshine' in 1999?",
+                            options: ["Our Lady Peace", "Barenaked Ladies", "Len", "The Tragically Hip"],
+                            correct: 2,
+                            trivia: "Bonus round! 3 points!",
+                            points: 3
+                        }
+                    ]
+                },
+                {
+                    name: "Round 2: Substitute - Corporate Edition",
+                    color: "#4ECDC4",
+                    questions: [
+                        {
+                            question: "What song do these corporate lyrics parody?",
+                            lyrics: "Raise a new ticket, describe your issue, Please attach screenshots, and your OS version. Escalation pending, SLA is looming, I'm stuck in an endless circle of support...",
+                            options: ["Smells Like Teen Spirit - Nirvana", "Creep - Radiohead", "Everybody Hurts - R.E.M.", "Under Pressure - Queen"],
+                            correct: 0,
+                            audioNote: "Play IT Ticket audio clip",
+                            points: 1
+                        },
+                        {
+                            question: "What song do these corporate lyrics parody?",
+                            lyrics: "Each quarter I meet with my manager, They ask: 'Were goals met?' and 'What's next quarter?' I speak of OKRs, metrics, and timelines...",
+                            options: ["Creep - Radiohead", "Mad World - Tears for Fears", "Everybody Hurts - R.E.M.", "Under Pressure - Queen"],
+                            correct: 0,
+                            audioNote: "Play Performance Review audio clip",
+                            points: 1
+                        },
+                        {
+                            question: "What song do these corporate lyrics parody?",
+                            lyrics: "We're all in the call waiting to begin, Someone's late, their camera's off again. The agenda's vague, slides yet to load...",
+                            options: ["Everybody Hurts - R.E.M.", "Creep - Radiohead", "Mad World - Tears for Fears", "Don't Stop Believin' - Journey"],
+                            correct: 0,
+                            audioNote: "Play Friday Meeting audio clip",
+                            points: 1
+                        },
+                        {
+                            question: "What song do these corporate lyrics parody?",
+                            lyrics: "Inbox has a thousand unread, Threads upon threads of CCs and reply-alls. I sort by 'urgent,' 'FYI,' 'please respond'...",
+                            options: ["Under Pressure - Queen & David Bowie", "Smells Like Teen Spirit - Nirvana", "Creep - Radiohead", "Mad World - Tears for Fears"],
+                            correct: 0,
+                            audioNote: "Play Email Overload audio clip",
+                            points: 1
+                        },
+                        {
+                            question: "What song do these corporate lyrics parody?",
+                            lyrics: "I step to the microwave, reheat yesterday's meal, Smell of burnt popcorn, coffee that's barely real...",
+                            options: ["Don't Stop Believin' - Journey", "Under Pressure - Queen", "Everybody Hurts - R.E.M.", "Creep - Radiohead"],
+                            correct: 0,
+                            audioNote: "Play Breakroom audio clip",
+                            points: 1
+                        },
+                        {
+                            question: "What song do these corporate lyrics parody?",
+                            lyrics: "I've logged too many hours, back pain in my spine, I dream of weekends lost, my life redefined...",
+                            options: ["Mad World - Tears for Fears", "Creep - Radiohead", "Everybody Hurts - R.E.M.", "Under Pressure - Queen"],
+                            correct: 0,
+                            audioNote: "Play Burnout audio clip",
+                            points: 1
+                        }
+                    ]
+                },
+                {
+                    name: "Round 3: Sample Identification",
+                    color: "#95E1D3",
+                    questions: [
+                        {
+                            question: "Which hit song sampled 'More Spell on You' by Eddie Johns (1979)?",
+                            options: ["One More Time - Daft Punk", "Around the World - Daft Punk", "Get Lucky - Daft Punk", "Harder Better Faster Stronger - Daft Punk"],
+                            correct: 0,
+                            audioNote: "Play sample clip",
+                            points: 1
+                        },
+                        {
+                            question: "Which hit song sampled 'Are You My Woman? (Tell Me So)' by The Chi-Lites (1970)?",
+                            options: ["Crazy in Love - Beyoncé", "Single Ladies - Beyoncé", "Halo - Beyoncé", "Irreplaceable - Beyoncé"],
+                            correct: 0,
+                            audioNote: "Play sample clip",
+                            points: 1
+                        },
+                        {
+                            question: "Which hit song sampled 'Harder, Better, Faster, Stronger' by Daft Punk (2001)?",
+                            options: ["Stronger - Kanye West", "Gold Digger - Kanye West", "Power - Kanye West", "Heartless - Kanye West"],
+                            correct: 0,
+                            audioNote: "Play sample clip",
+                            points: 1
+                        },
+                        {
+                            question: "Which hit song sampled 'I'm Coming Out' by Diana Ross (1980)?",
+                            options: ["Mo Money Mo Problems - Biggie", "Hypnotize - Biggie", "Juicy - Biggie", "Big Poppa - Biggie"],
+                            correct: 0,
+                            audioNote: "Play sample clip",
+                            points: 1
+                        },
+                        {
+                            question: "Which hit song sampled 'Gimme! Gimme! Gimme!' by ABBA (1979)?",
+                            options: ["Hung Up - Madonna", "Music - Madonna", "Vogue - Madonna", "Like a Prayer - Madonna"],
+                            correct: 0,
+                            audioNote: "Play sample clip",
+                            points: 1
+                        },
+                        {
+                            question: "Which hit song sampled 'Ike's Rap II' by Isaac Hayes (1971)?",
+                            options: ["Feel Good Inc. - Gorillaz", "Clint Eastwood - Gorillaz", "Dare - Gorillaz", "19-2000 - Gorillaz"],
+                            correct: 0,
+                            audioNote: "Play sample clip",
+                            points: 1
+                        }
+                    ]
+                },
+                {
+                    name: "Round 4: Name That... (Hard Mode)",
+                    color: "#F38181",
+                    questions: [
+                        {
+                            question: "Name this drum rudiment",
+                            options: ["Paradiddle", "Flam", "Drag", "Ruff"],
+                            correct: 0,
+                            imageNote: "Show snare drum notation",
+                            trivia: "Core to drumline patterns and marching snare technique.",
+                            points: 1
+                        },
+                        {
+                            question: "Name this band",
+                            options: ["Gogol Bordello", "Balkan Beat Box", "DeVotchKa", "Beirut"],
+                            correct: 0,
+                            imageNote: "Show Gogol Bordello photo",
+                            trivia: "NYC-based gypsy punk band formed in 1999.",
+                            points: 1
+                        },
+                        {
+                            question: "Name this instrument",
+                            options: ["Theremin", "Ondes Martenot", "Telharmonium", "Trautonium"],
+                            correct: 0,
+                            imageNote: "Show theremin image",
+                            trivia: "Invented in 1920, one of the earliest electronic instruments, played without touching.",
+                            points: 1
+                        },
+                        {
+                            question: "Name this album",
+                            options: ["Unknown Pleasures - Joy Division", "Closer - Joy Division", "The Queen is Dead - The Smiths", "Loveless - My Bloody Valentine"],
+                            correct: 0,
+                            imageNote: "Show Unknown Pleasures corner detail",
+                            trivia: "The cover art is a plot of pulsar data from the 1970s.",
+                            points: 1
+                        },
+                        {
+                            question: "Name this artist",
+                            options: ["Sun Ra", "George Clinton", "Bootsy Collins", "Parliament"],
+                            correct: 0,
+                            imageNote: "Show Sun Ra photo",
+                            trivia: "Claimed to be from Saturn, pioneering free jazz and Afrofuturism.",
+                            points: 1
+                        },
+                        {
+                            question: "Name this musical symbol",
+                            options: ["Diminished 7th chord", "Augmented 7th chord", "Half-diminished 7th", "Major 7th chord"],
+                            correct: 0,
+                            imageNote: "Show diminished 7th chord notation",
+                            trivia: "Called 'the musician's secret weapon' because it resolves in multiple directions.",
+                            points: 1
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Main App Router
+        const App = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            const sessionId = urlParams.get('session') || 'default';
+            const playerId = urlParams.get('player');
+            const teamId = urlParams.get('team');
+
+            if (mode === 'player' && playerId && teamId) {
+                return <PlayerInterface sessionId={sessionId} playerId={playerId} teamId={teamId} />;
+            } else if (mode === 'host' || !mode) {
+                return <HostInterface sessionId={sessionId} />;
+            }
+            return <div className="p-8 text-center">Invalid URL parameters</div>;
+        };
+
+        // HOST INTERFACE
+        const HostInterface = ({ sessionId }) => {
+            const [gameState, setGameState] = useState(null);
+            const [isSetup, setIsSetup] = useState(true);
+            const [teamNames, setTeamNames] = useState({ team1: '', team2: '' });
+            const [playerCounts, setPlayerCounts] = useState({ team1: 3, team2: 3 });
+            const [timer, setTimer] = useState(30);
+            const [timerActive, setTimerActive] = useState(false);
+            const [votes, setVotes] = useState({});
+            const [showVotes, setShowVotes] = useState(false);
+
+            useEffect(() => {
+                const gameRef = database.ref(`sessions/${sessionId}/game`);
+                gameRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        setGameState(data);
+                        setIsSetup(false);
+                    }
+                });
+
+                const votesRef = database.ref(`sessions/${sessionId}/votes`);
+                votesRef.on('value', (snapshot) => {
+                    setVotes(snapshot.val() || {});
+                });
+
+                return () => {
+                    gameRef.off();
+                    votesRef.off();
+                };
+            }, [sessionId]);
+
+            useEffect(() => {
+                let interval;
+                if (timerActive && timer > 0) {
+                    interval = setInterval(() => setTimer(t => t - 1), 1000);
+                } else if (timer === 0) {
+                    setTimerActive(false);
+                    closeVoting();
+                }
+                return () => clearInterval(interval);
+            }, [timerActive, timer]);
+
+            const initializeGame = async () => {
+                if (!teamNames.team1 || !teamNames.team2) return;
+
+                const initialState = {
+                    teamNames,
+                    scores: { team1: 0, team2: 0 },
+                    currentRound: 0,
+                    currentQuestion: 0,
+                    showAnswer: false,
+                    votingOpen: false,
+                    playerCounts
+                };
+
+                await database.ref(`sessions/${sessionId}/game`).set(initialState);
+                
+                // Generate player links
+                const links = {
+                    team1: [],
+                    team2: []
+                };
+
+                for (let i = 1; i <= playerCounts.team1; i++) {
+                    links.team1.push({
+                        id: `team1_player${i}`,
+                        url: `${window.location.origin}${window.location.pathname}?mode=player&session=${sessionId}&team=team1&player=player${i}`
+                    });
+                }
+
+                for (let i = 1; i <= playerCounts.team2; i++) {
+                    links.team2.push({
+                        id: `team2_player${i}`,
+                        url: `${window.location.origin}${window.location.pathname}?mode=player&session=${sessionId}&team=team2&player=player${i}`
+                    });
+                }
+
+                await database.ref(`sessions/${sessionId}/playerLinks`).set(links);
+            };
+
+            const openVoting = async () => {
+                setTimer(30);
+                setTimerActive(true);
+                await database.ref(`sessions/${sessionId}/game/votingOpen`).set(true);
+                await database.ref(`sessions/${sessionId}/votes`).set(null);
+            };
+
+            const closeVoting = async () => {
+                setTimerActive(false);
+                await database.ref(`sessions/${sessionId}/game/votingOpen`).set(false);
+                setShowVotes(true);
+            };
+
+            const calculateTeamAnswer = (teamId) => {
+                const teamVotes = {};
+                Object.entries(votes).forEach(([playerId, vote]) => {
+                    if (playerId.startsWith(teamId) && vote.answer !== undefined) {
+                        teamVotes[vote.answer] = (teamVotes[vote.answer] || 0) + 1;
+                    }
+                });
+
+                if (Object.keys(teamVotes).length === 0) return null;
+
+                const maxVotes = Math.max(...Object.values(teamVotes));
+                const winners = Object.keys(teamVotes).filter(ans => teamVotes[ans] === maxVotes);
+                
+                return winners.length === 1 
+                    ? parseInt(winners[0]) 
+                    : parseInt(winners[Math.floor(Math.random() * winners.length)]);
+            };
+
+            const awardPoints = async (teamId) => {
+                const newScore = gameState.scores[teamId] + currentQuestion.points;
+                await database.ref(`sessions/${sessionId}/game/scores/${teamId}`).set(newScore);
+            };
+
+            const revealAnswer = async () => {
+                await database.ref(`sessions/${sessionId}/game/showAnswer`).set(true);
+            };
+
+            const nextQuestion = async () => {
+                const nextQ = gameState.currentQuestion + 1;
+                const nextR = gameState.currentRound;
+
+                if (nextQ < QUIZ_DATA.rounds[nextR].questions.length) {
+                    await database.ref(`sessions/${sessionId}/game`).update({
+                        currentQuestion: nextQ,
+                        showAnswer: false,
+                        votingOpen: false
+                    });
+                } else if (nextR < QUIZ_DATA.rounds.length - 1) {
+                    await database.ref(`sessions/${sessionId}/game`).update({
+                        currentRound: nextR + 1,
+                        currentQuestion: 0,
+                        showAnswer: false,
+                        votingOpen: false
+                    });
+                }
+                setShowVotes(false);
+                await database.ref(`sessions/${sessionId}/votes`).set(null);
+            };
+
+            if (isSetup) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full">
+                            <h1 className="text-5xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-8">
+                                🎵 Spicks & Specks 🎵
+                            </h1>
+                            
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-lg font-semibold mb-2">Team 1 Name</label>
+                                    <input
+                                        type="text"
+                                        value={teamNames.team1}
+                                        onChange={(e) => setTeamNames(prev => ({ ...prev, team1: e.target.value }))}
+                                        className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none"
+                                    />
+                                    <label className="block text-sm font-semibold mt-2 mb-1">Number of players</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                        value={playerCounts.team1}
+                                        onChange={(e) => setPlayerCounts(prev => ({ ...prev, team1: parseInt(e.target.value) }))}
+                                        className="w-24 px-4 py-2 border-2 rounded-xl"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-lg font-semibold mb-2">Team 2 Name</label>
+                                    <input
+                                        type="text"
+                                        value={teamNames.team2}
+                                        onChange={(e) => setTeamNames(prev => ({ ...prev, team2: e.target.value }))}
+                                        className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none"
+                                    />
+                                    <label className="block text-sm font-semibold mt-2 mb-1">Number of players</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                        value={playerCounts.team2}
+                                        onChange={(e) => setPlayerCounts(prev => ({ ...prev, team2: parseInt(e.target.value) }))}
+                                        className="w-24 px-4 py-2 border-2 rounded-xl"
+                                    />
+                                </div>
+                                
+                                <button
+                                    onClick={initializeGame}
+                                    disabled={!teamNames.team1 || !teamNames.team2}
+                                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold text-xl hover:shadow-lg transition disabled:opacity-50"
+                                >
+                                    Generate Player Links 🎸
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (!gameState) return <div className="p-8 text-center">Loading...</div>;
+
+            const currentRound = QUIZ_DATA.rounds[gameState.currentRound];
+            const currentQuestion = currentRound.questions[gameState.currentQuestion];
+            const isMultipleChoice = currentQuestion.options !== undefined;
+
+            const team1Answer = calculateTeamAnswer('team1');
+            const team2Answer = calculateTeamAnswer('team2');
+            const team1Correct = team1Answer === currentQuestion.correct;
+            const team2Correct = team2Answer === currentQuestion.correct;
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 p-4">
+                    <div className="max-w-6xl mx-auto mb-6">
+                        <div className="bg-white rounded-2xl shadow-lg p-4 flex justify-between items-center flex-wrap gap-4">
+                            <div className="flex gap-8">
+                                <div>
+                                    <div className="text-sm text-gray-600">{gameState.teamNames.team1}</div>
+                                    <div className="text-2xl font-bold text-purple-600">{gameState.scores.team1}</div>
+                                </div>
+                                <div>
+                                    <div className="text-sm text-gray-600">{gameState.teamNames.team2}</div>
+                                    <div className="text-2xl font-bold text-pink-600">{gameState.scores.team2}</div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-4">
+                                <div className={`text-3xl font-bold ${timer <= 10 ? 'text-red-500' : 'text-gray-700'}`}>
+                                    {timer}s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-8">
+                        <div className="text-center mb-8">
+                            <div 
+                                className="inline-block px-6 py-2 rounded-full text-white font-bold text-lg mb-4"
+                                style={{ backgroundColor: currentRound.color }}
+                            >
+                                {currentRound.name}
+                            </div>
+                            <div className="text-gray-600">
+                                Question {gameState.currentQuestion + 1} of {currentRound.questions.length}
+                            </div>
+                        </div>
+
+                        <h2 className="text-3xl font-bold text-center mb-6">{currentQuestion.question}</h2>
+
+                        {currentQuestion.lyrics && (
+                            <div className="bg-gray-50 border-l-4 border-purple-500 p-6 rounded-r-lg mb-6">
+                                <p className="italic whitespace-pre-line">{currentQuestion.lyrics}</p>
+                            </div>
+                        )}
+
+                        {currentQuestion.audioNote && (
+                            <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 mb-6 flex items-center gap-3">
+                                <lucide-icon name="volume-2" className="text-blue-600"></lucide-icon>
+                                <span className="font-semibold">{currentQuestion.audioNote}</span>
+                            </div>
+                        )}
+
+                        {currentQuestion.imageNote && (
+                            <div className="bg-green-50 border-2 border-green-300 rounded-xl p-4 mb-6">
+                                <span className="font-semibold">{currentQuestion.imageNote}</span>
+                            </div>
+                        )}
+
+                        {isMultipleChoice && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                {currentQuestion.options.map((option, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={`p-4 border-2 rounded-xl ${
+                                            gameState.showAnswer && idx === currentQuestion.correct
+                                                ? 'bg-green-100 border-green-500'
+                                                : 'border-gray-300'
+                                        }`}
+                                    >
+                                        <span className="font-bold mr-2">{String.fromCharCode(65 + idx)}.</span>
+                                        {option}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {showVotes && (
+                            <div className="grid md:grid-cols-2 gap-4 mb-6">
+                                <div className="border-2 border-purple-300 rounded-xl p-4">
+                                    <h3 className="font-bold text-lg mb-2">{gameState.teamNames.team1} Votes</h3>
+                                    <div className="space-y-1">
+                                        {Object.entries(votes)
+                                            .filter(([id]) => id.startsWith('team1'))
+                                            .map(([id, vote]) => (
+                                                <div key={id} className="text-sm">
+                                                    {id}: {vote.answer !== undefined ? currentQuestion.options[vote.answer] : 'No vote'}
+                                                </div>
+                                            ))}
+                                    </div>
+                                    <div className="mt-3 pt-3 border-t-2">
+                                        <span className="font-bold">Team Answer: </span>
+                                        {team1Answer !== null ? (
+                                            <span className={team1Correct ? 'text-green-600 font-bold' : 'text-red-600'}>
+                                                {currentQuestion.options[team1Answer]} {team1Correct ? '✓' : '✗'}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-500">No votes</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="border-2 border-pink-300 rounded-xl p-4">
+                                    <h3 className="font-bold text-lg mb-2">{gameState.teamNames.team2} Votes</h3>
+                                    <div className="space-y-1">
+                                        {Object.entries(votes)
+                                            .filter(([id]) => id.startsWith('team2'))
+                                            .map(([id, vote]) => (
+                                                <div key={id} className="text-sm">
+                                                    {id}: {vote.answer !== undefined ? currentQuestion.options[vote.answer] : 'No vote'}
+                                                </div>
+                                            ))}
+                                    </div>
+                                    <div className="mt-3 pt-3 border-t-2">
+                                        <span className="font-bold">Team Answer: </span>
+                                        {team2Answer !== null ? (
+                                            <span className={team2Correct ? 'text-green-600 font-bold' : 'text-red-600'}>
+                                                {currentQuestion.options[team2Answer]} {team2Correct ? '✓' : '✗'}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-500">No votes</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {gameState.showAnswer && currentQuestion.trivia && (
+                            <div className="bg-green-50 border-2 border-green-400 rounded-xl p-4 mb-6">
+                                <p className="text-gray-700">💡 {currentQuestion.trivia}</p>
+                            </div>
+                        )}
+
+                        <div className="flex gap-4 justify-center flex-wrap">
+                            {!gameState.votingOpen && !showVotes && (
+                                <button onClick={openVoting} className="px-6 py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600">
+                                    Open Voting
+                                </button>
+                            )}
+                            
+                            {gameState.votingOpen && (
+                                <button onClick={closeVoting} className="px-6 py-3 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600">
+                                    Close Voting
+                                </button>
+                            )}
+
+                            {showVotes && !gameState.showAnswer && (
+                                <button onClick={revealAnswer} className="px-6 py-3 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600">
+                                    Reveal Answer
+                                </button>
+                            )}
+
+                            {gameState.showAnswer && (
+                                <>
+                                    {team1Correct && (
+                                        <button onClick={() => awardPoints('team1')} className="px-6 py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700">
+                                            +{currentQuestion.points} {gameState.teamNames.team1}
+                                        </button>
+                                    )}
+                                    
+                                    {team2Correct && (
+                                        <button onClick={() => awardPoints('team2')} className="px-6 py-3 bg-pink-600 text-white rounded-xl font-bold hover:bg-pink-700">
+                                            +{currentQuestion.points} {gameState.teamNames.team2}
+                                        </button>
+                                    )}
+
+                                    <button onClick={nextQuestion} className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:shadow-lg flex items-center gap-2">
+                                        Next Question
+                                        <lucide-icon name="chevron-right"></lucide-icon>
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // PLAYER INTERFACE
+        const PlayerInterface = ({ sessionId, playerId, teamId }) => {
+            const [gameState, setGameState] = useState(null);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [hasVoted, setHasVoted] = useState(false);
+
+            useEffect(() => {
+                const gameRef = database.ref(`sessions/${sessionId}/game`);
+                gameRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    setGameState(data);
+                    if (data && !data.votingOpen) {
+                        setSelectedAnswer(null);
+                        setHasVoted(false);
+                    }
+                });
+
+                return () => gameRef.off();
+            }, [sessionId]);
+
+            const submitVote = async () => {
+                if (selectedAnswer === null) return;
+                
+                await database.ref(`sessions/${sessionId}/votes/${teamId}_${playerId}`).set({
+                    answer: selectedAnswer,
+                    timestamp: Date.now()
+                });
+                
+                setHasVoted(true);
+            };
+
+            if (!gameState) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-2xl p-8 text-center">
+                            <h2 className="text-2xl font-bold mb-4">Waiting for quiz to start...</h2>
+                            <p className="text-gray-600">Your host will begin shortly!</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentRound = QUIZ_DATA.rounds[gameState.currentRound];
+            const currentQuestion = currentRound.questions[gameState.currentQuestion];
+            const teamName = gameState.teamNames[teamId];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full">
+                        <div className="text-center mb-6">
+                            <div className={`text-2xl font-bold ${teamId === 'team1' ? 'text-purple-600' : 'text-pink-600'}`}>
+                                {teamName}
+                            </div>
+                            <div className="text-gray-600">{playerId}</div>
+                        </div>
+
+                        <div className="mb-6">
+                            <div className="bg-gray-100 rounded-xl p-4 mb-4">
+                                <div className="font-bold mb-2">{currentRound.name}</div>
+                                <div className="text-sm text-gray-600">
+                                    Question {gameState.currentQuestion + 1} of {currentRound.questions.length}
+                                </div>
+                            </div>
+
+                            <h2 className="text-xl font-bold mb-4">{currentQuestion.question}</h2>
+
+                            {!gameState.votingOpen && !hasVoted && (
+                                <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 text-center">
+                                    <p className="font-semibold">Waiting for voting to open...</p>
+                                </div>
+                            )}
+
+                            {gameState.votingOpen && !hasVoted && (
+                                <>
+                                    <div className="space-y-3 mb-6">
+                                        {currentQuestion.options.map((option, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedAnswer(idx)}
+                                                className={`w-full p-4 border-2 rounded-xl text-left transition ${
+                                                    selectedAnswer === idx
+                                                        ? 'border-blue-500 bg-blue-50'
+                                                        : 'border-gray-300 hover:border-blue-300'
+                                                }`}
+                                            >
+                                                <span className="font-bold mr-2">{String.fromCharCode(65 + idx)}.</span>
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        onClick={submitVote}
+                                        disabled={selectedAnswer === null}
+                                        className="w-full py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold text-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    >
+                                        <lucide-icon name="send"></lucide-icon>
+                                        Submit Vote
+                                    </button>
+                                </>
+                            )}
+
+                            {hasVoted && (
+                                <div className="bg-green-50 border-2 border-green-400 rounded-xl p-6 text-center">
+                                    <lucide-icon name="check-circle" className="mx-auto text-green-600 mb-2" size="48"></lucide-icon>
+                                    <p className="font-bold text-lg text-green-800">Vote Submitted!</p>
+                                    <p className="text-gray-600 mt-2">
+                                        You selected: <span className="font-semibold">{currentQuestion.options[selectedAnswer]}</span>
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        lucide.createIcons();
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
