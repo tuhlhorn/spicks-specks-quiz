@@ -341,6 +341,7 @@
 
             const team1Availability = getTeamAvailability('team1');
             const team2Availability = getTeamAvailability('team2');
+            const team3Availability = getTeamAvailability('team3');
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center p-4">
@@ -388,6 +389,19 @@
                                     </span>
                                 </div>
                             </button>
+
+                            <button
+                                onClick={() => joinTeam('team3')}
+                                disabled={isJoining || team3Availability.available === 0 || !playerName.trim()}
+                                className="w-full bg-gradient-to-r from-orange-500 to-orange-700 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <div className="flex justify-between items-center px-4">
+                                    <span>Join {gameState.teamNames.team3}</span>
+                                    <span className="text-sm">
+                                        {team3Availability.filled}/{team3Availability.total}
+                                    </span>
+                                </div>
+                            </button>
                         </div>
 
                         {isJoining && (
@@ -404,8 +418,8 @@
         const HostInterface = ({ sessionId }) => {
             const [gameState, setGameState] = useState(null);
             const [isSetup, setIsSetup] = useState(true);
-            const [teamNames, setTeamNames] = useState({ team1: '', team2: '' });
-            const [playerCounts, setPlayerCounts] = useState({ team1: 3, team2: 3 });
+            const [teamNames, setTeamNames] = useState({ team1: '', team2: '', team3: '' });
+            const [playerCounts, setPlayerCounts] = useState({ team1: 3, team2: 3, team3: 3 });
             const [timer, setTimer] = useState(30);
             const [timerActive, setTimerActive] = useState(false);
             const [votes, setVotes] = useState({});
@@ -476,11 +490,11 @@
             }, [showQR, sessionId]);
 
             const initializeGame = async () => {
-                if (!teamNames.team1 || !teamNames.team2) return;
+                if (!teamNames.team1 || !teamNames.team2 || !teamNames.team3) return;
 
                 const initialState = {
                     teamNames,
-                    scores: { team1: 0, team2: 0 },
+                    scores: { team1: 0, team2: 0, team3: 0 },
                     currentRound: 0,
                     currentQuestion: 0,
                     showAnswer: false,
@@ -559,8 +573,8 @@
                     await database.ref(`sessions/${sessionId}`).set(null);
                     setIsSetup(true);
                     setGameState(null);
-                    setTeamNames({ team1: '', team2: '' });
-                    setPlayerCounts({ team1: 3, team2: 3 });
+                    setTeamNames({ team1: '', team2: '', team3: '' });
+                    setPlayerCounts({ team1: 3, team2: 3, team3: 3 });
                 }
             };
 
@@ -617,9 +631,28 @@
                                     />
                                 </div>
                                 
+                                <div>
+                                    <label className="block text-lg font-semibold mb-2">Team 3 Name</label>
+                                    <input
+                                        type="text"
+                                        value={teamNames.team3}
+                                        onChange={(e) => setTeamNames(prev => ({ ...prev, team3: e.target.value }))}
+                                        className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none"
+                                    />
+                                    <label className="block text-sm font-semibold mt-2 mb-1">Number of players</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                        value={playerCounts.team3}
+                                        onChange={(e) => setPlayerCounts(prev => ({ ...prev, team3: parseInt(e.target.value) }))}
+                                        className="w-24 px-4 py-2 border-2 rounded-xl"
+                                    />
+                                </div>
+                                
                                 <button
                                     onClick={initializeGame}
-                                    disabled={!teamNames.team1 || !teamNames.team2}
+                                    disabled={!teamNames.team1 || !teamNames.team2 || !teamNames.team3}
                                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold text-xl hover:shadow-lg transition disabled:opacity-50"
                                 >
                                     Start Quiz Setup 🎸
@@ -638,8 +671,10 @@
 
             const team1Answer = calculateTeamAnswer('team1');
             const team2Answer = calculateTeamAnswer('team2');
+            const team3Answer = calculateTeamAnswer('team3');
             const team1Correct = team1Answer === currentQuestion.correct;
             const team2Correct = team2Answer === currentQuestion.correct;
+            const team3Correct = team3Answer === currentQuestion.correct;
 
             const joinUrl = `${window.location.origin}${window.location.pathname}?mode=join&session=${sessionId}`;
 
@@ -655,6 +690,10 @@
                                 <div>
                                     <div className="text-sm text-gray-600">{gameState.teamNames.team2}</div>
                                     <div className="text-2xl font-bold text-pink-600">{gameState.scores.team2}</div>
+                                </div>
+                                <div>
+                                    <div className="text-sm text-gray-600">{gameState.teamNames.team3}</div>
+                                    <div className="text-2xl font-bold text-orange-600">{gameState.scores.team3}</div>
                                 </div>
                             </div>
                             
@@ -809,7 +848,7 @@
                         )}
 
                         {showVotes && (
-                            <div className="grid md:grid-cols-2 gap-4 mb-6">
+                            <div className="grid md:grid-cols-3 gap-4 mb-6">
                                 <div className="border-2 border-purple-300 rounded-xl p-4">
                                     <h3 className="font-bold text-lg mb-2">{gameState.teamNames.team1} Votes</h3>
                                     <div className="space-y-1">
@@ -855,6 +894,29 @@
                                         )}
                                     </div>
                                 </div>
+
+                                <div className="border-2 border-orange-300 rounded-xl p-4">
+                                    <h3 className="font-bold text-lg mb-2">{gameState.teamNames.team3} Votes</h3>
+                                    <div className="space-y-1">
+                                        {Object.entries(votes)
+                                            .filter(([id]) => id.startsWith('team3'))
+                                            .map(([id, vote]) => (
+                                                <div key={id} className="text-sm">
+                                                    {id}: {vote.answer !== undefined ? currentQuestion.options[vote.answer] : 'No vote'}
+                                                </div>
+                                            ))}
+                                    </div>
+                                    <div className="mt-3 pt-3 border-t-2">
+                                        <span className="font-bold">Team Answer: </span>
+                                        {team3Answer !== null ? (
+                                            <span className={team3Correct ? 'text-green-600 font-bold' : 'text-red-600'}>
+                                                {currentQuestion.options[team3Answer]} {team3Correct ? '✓' : '✗'}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-500">No votes</span>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         )}
 
@@ -894,6 +956,12 @@
                                     {team2Correct && (
                                         <button onClick={() => awardPoints('team2')} className="px-6 py-3 bg-pink-600 text-white rounded-xl font-bold hover:bg-pink-700">
                                             +{currentQuestion.points} {gameState.teamNames.team2}
+                                        </button>
+                                    )}
+
+                                    {team3Correct && (
+                                        <button onClick={() => awardPoints('team3')} className="px-6 py-3 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-700">
+                                            +{currentQuestion.points} {gameState.teamNames.team3}
                                         </button>
                                     )}
 
@@ -959,7 +1027,11 @@
                 <div className="min-h-screen bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center p-4">
                     <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full">
                         <div className="text-center mb-6">
-                            <div className={`text-2xl font-bold ${teamId === 'team1' ? 'text-purple-600' : 'text-pink-600'}`}>
+                            <div className={`text-2xl font-bold ${
+                                teamId === 'team1' ? 'text-purple-600' : 
+                                teamId === 'team2' ? 'text-pink-600' : 
+                                'text-orange-600'
+                            }`}>
                                 {teamName}
                             </div>
                             <div className="text-gray-600">{playerId}</div>
