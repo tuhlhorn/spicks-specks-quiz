@@ -500,7 +500,7 @@
             };
 
             const openVoting = async () => {
-                setTimer(30);
+                setTimer(20);
                 setTimerActive(true);
                 await database.ref(`sessions/${sessionId}/game/votingOpen`).set(true);
                 await database.ref(`sessions/${sessionId}/votes`).set(null);
