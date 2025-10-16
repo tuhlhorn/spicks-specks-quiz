@@ -23,6 +23,10 @@
         body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .image-crop-top {
+            object-fit: cover;
+            object-position: center 40%;
+        }
     </style>
 </head>
 <body>
@@ -125,50 +129,50 @@
                     questions: [
                         {
                             question: "Which artist's real name is: Reginald Kenneth Dwight?",
-                            options: ["Elton John", "Billy Joel", "Paul McCartney", "Phil Collins"],
-                            correct: 0,
+                            options: ["Billy Joel", "Elton John", "Paul McCartney", "Phil Collins"],
+                            correct: 1,
                             trivia: "He took 'Elton' from saxophonist Elton Dean and 'John' from singer Long John Baldry.",
                             points: 1
                         },
                         {
                             question: "Which artist's real name is: Elizabeth Woolridge Grant?",
-                            options: ["Lana Del Rey", "Lorde", "Florence Welch", "Sky Ferreira"],
-                            correct: 0,
+                            options: ["Lorde", "Lana Del Rey", "Florence Welch", "Sky Ferreira"],
+                            correct: 1,
                             trivia: "She chose 'Lana Del Rey' for its glamorous, cinematic quality.",
                             points: 1
                         },
                         {
                             question: "Which artist's real name is: Robyn Fenty?",
-                            options: ["Rihanna", "Beyoncé", "Alicia Keys", "Jhené Aiko"],
-                            correct: 0,
+                            options: ["Beyoncé", "Alicia Keys", "Rihanna", "Jhené Aiko"],
+                            correct: 2,
                             trivia: "Robyn is her first name, which she now uses as her stage name.",
                             points: 1
                         },
                         {
                             question: "Which artist's real name is: Alecia Beth Moore?",
-                            options: ["P!nk", "Alicia Keys", "Avril Lavigne", "Hayley Williams"],
-                            correct: 0,
+                            options: ["Alicia Keys", "P!nk", "Avril Lavigne", "Hayley Williams"],
+                            correct: 1,
                             trivia: "Her nickname came from the character Mr. Pink in Reservoir Dogs.",
                             points: 1
                         },
                         {
                             question: "Which artist's real name is: Eilleen Regina Edwards?",
-                            options: ["Shania Twain", "Faith Hill", "LeAnn Rimes", "Martina McBride"],
-                            correct: 0,
+                            options: ["Faith Hill", "LeAnn Rimes", "Shania Twain", "Martina McBride"],
+                            correct: 2,
                             trivia: "She took the name 'Shania' meaning 'on my way' in Ojibwe.",
                             points: 1
                         },
                         {
                             question: "Which artist's real name is: Adam Richard Wiles?",
-                            options: ["Calvin Harris", "David Guetta", "Zedd", "Kygo"],
-                            correct: 0,
+                            options: ["David Guetta", "Calvin Harris", "Zedd", "Adam Levine"],
+                            correct: 1,
                             trivia: "He chose a stage name to sound more racially ambiguous for the dance music scene.",
                             points: 1
                         },
                         {
                             question: "Which artist's real name is: Belcalis Marlenis Almánzar?",
-                            options: ["Cardi B", "Nicki Minaj", "Megan Thee Stallion", "Saweetie"],
-                            correct: 0,
+                            options: ["Nicki Minaj", "Cardi B", "Megan Thee Stallion", "Saweetie"],
+                            correct: 1,
                             trivia: "Cardi B comes from Bacardi, a nickname based on the rum brand.",
                             points: 1
                         }
@@ -181,48 +185,49 @@
                         {
                             question: "Name this music festival",
                             imageUrl: "https://imgproxy.ra.co/_/quality:66/aHR0cHM6Ly9zdGF0aWMucmEuY28vaW1hZ2VzL25ld3MvMjAyNS9yLmpwZw==",
-                            options: ["Roskilde Festival", "Glastonbury", "Primavera Sound", "Coachella"],
-                            correct: 0,
+                            options: ["Glastonbury", "Roskilde Festival", "Primavera Sound", "Coachella"],
+                            correct: 1,
                             trivia: "One of Europe's largest music festivals, held annually in Denmark since 1971.",
                             points: 1
                         },
                         {
                             question: "Name this iconic album",
                             imageUrl: "https://www.groundguitar.com/wp-content/uploads/2024/02/Tame-Impala-Currents-2015.jpg",
-                            options: ["Currents - Tame Impala", "Lonerism - Tame Impala", "Innerspeaker - Tame Impala", "The Slow Rush - Tame Impala"],
-                            correct: 0,
+                            cropTop: true,
+                            options: ["Lonerism - Tame Impala", "Currents - Tame Impala", "Innerspeaker - Tame Impala", "The Slow Rush - Tame Impala"],
+                            correct: 1,
                             trivia: "Kevin Parker's third studio album marked a shift towards more electronic and pop-influenced sound.",
                             points: 1
                         },
                         {
                             question: "Name this instrument",
                             imageUrl: "https://images.musicstore.de/images/1280/moog-etherwave-theremin_1_SYN0008187-000.jpg",
-                            options: ["Theremin", "Ondes Martenot", "Telharmonium", "Mellotron"],
-                            correct: 0,
+                            options: ["Ondes Martenot", "Telharmonium", "Theremin", "Mellotron"],
+                            correct: 2,
                             trivia: "Invented in 1920, one of the earliest electronic instruments, played without touching.",
                             points: 1
                         },
                         {
                             question: "Name this album",
                             imageUrl: "https://i0.wp.com/alt77.com/wp-content/uploads/2024/11/Joy-Divison-22Unknown-Pleasures22-Reviewed-and-Revisited.jpg?resize=1140%2C694&ssl=1",
-                            options: ["Unknown Pleasures - Joy Division", "Closer - Joy Division", "The Queen is Dead - The Smiths", "Loveless - My Bloody Valentine"],
-                            correct: 0,
+                            options: ["Closer - Joy Division", "Unknown Pleasures - Joy Division", "The Queen is Dead - The Smiths", "Loveless - My Bloody Valentine"],
+                            correct: 1,
                             trivia: "The cover art is a plot of pulsar data from the 1970s.",
                             points: 1
                         },
                         {
                             question: "Name this artist",
                             imageUrl: "https://www.rollingstone.com/wp-content/uploads/2025/10/dangelo-flashback.jpg?w=1581&h=1054&crop=1",
-                            options: ["D'Angelo", "Maxwell", "Musiq Soulchild", "Eric Benét"],
-                            correct: 0,
+                            options: ["Maxwell", "D'Angelo", "Musiq Soulchild", "Eric Benét"],
+                            correct: 1,
                             trivia: "A pioneer of the neo-soul movement in the 1990s.",
                             points: 1
                         },
                         {
                             question: "Name this iconic music venue",
                             imageUrl: "https://www.architecture.com.au/wp-content/uploads/00_7572-heritage_SOHConcertHallRenewal_ARMArchitecture_DanielBoud-1.jpg",
-                            options: ["Sydney Opera House", "Carnegie Hall", "Royal Albert Hall", "Vienna State Opera"],
-                            correct: 0,
+                            options: ["Carnegie Hall", "Sydney Opera House", "Royal Albert Hall", "Vienna State Opera"],
+                            correct: 1,
                             trivia: "Designed by Danish architect Jørn Utzon and opened in 1973.",
                             points: 1
                         }
@@ -284,32 +289,25 @@
 
                 // Find next available player slot
                 const teamPrefix = teamId;
-                const maxPlayers = gameState.playerCounts[teamId];
-                let assignedSlot = null;
-
-                for (let i = 1; i <= maxPlayers; i++) {
-                    const slotKey = `${teamPrefix}_player${i}`;
-                    if (!playerAssignments[slotKey]) {
-                        assignedSlot = `player${i}`;
-                        
-                        // Reserve this slot
-                        await database.ref(`sessions/${sessionId}/playerAssignments/${slotKey}`).set({
-                            name: playerName.trim(),
-                            timestamp: Date.now()
-                        });
-                        
-                        break;
-                    }
+                let playerNumber = 1;
+                
+                // Find the next available player number for this team
+                while (playerAssignments[`${teamPrefix}_player${playerNumber}`]) {
+                    playerNumber++;
                 }
-
-                if (assignedSlot) {
-                    // Redirect to player interface
-                    const playerUrl = `${window.location.origin}${window.location.pathname}?mode=player&session=${sessionId}&team=${teamId}&player=${assignedSlot}`;
-                    window.location.href = playerUrl;
-                } else {
-                    alert(`Sorry, ${gameState.teamNames[teamId]} is full!`);
-                    setIsJoining(false);
-                }
+                
+                const assignedSlot = `player${playerNumber}`;
+                const slotKey = `${teamPrefix}_${assignedSlot}`;
+                
+                // Reserve this slot
+                await database.ref(`sessions/${sessionId}/playerAssignments/${slotKey}`).set({
+                    name: playerName.trim(),
+                    timestamp: Date.now()
+                });
+                
+                // Redirect to player interface
+                const playerUrl = `${window.location.origin}${window.location.pathname}?mode=player&session=${sessionId}&team=${teamId}&player=${assignedSlot}`;
+                window.location.href = playerUrl;
             };
 
             if (!gameState) {
@@ -324,24 +322,22 @@
                 );
             }
 
-            const getTeamAvailability = (teamId) => {
+            const getTeamPlayerCount = (teamId) => {
                 const teamPrefix = teamId;
-                const maxPlayers = gameState.playerCounts[teamId];
-                let filled = 0;
+                let count = 0;
                 
-                for (let i = 1; i <= maxPlayers; i++) {
-                    const slotKey = `${teamPrefix}_player${i}`;
-                    if (playerAssignments[slotKey]) {
-                        filled++;
+                Object.keys(playerAssignments).forEach(key => {
+                    if (key.startsWith(teamPrefix)) {
+                        count++;
                     }
-                }
+                });
                 
-                return { filled, total: maxPlayers, available: maxPlayers - filled };
+                return count;
             };
 
-            const team1Availability = getTeamAvailability('team1');
-            const team2Availability = getTeamAvailability('team2');
-            const team3Availability = getTeamAvailability('team3');
+            const team1Count = getTeamPlayerCount('team1');
+            const team2Count = getTeamPlayerCount('team2');
+            const team3Count = getTeamPlayerCount('team3');
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center p-4">
@@ -366,39 +362,39 @@
                         <div className="space-y-4">
                             <button
                                 onClick={() => joinTeam('team1')}
-                                disabled={isJoining || team1Availability.available === 0 || !playerName.trim()}
+                                disabled={isJoining || !playerName.trim()}
                                 className="w-full bg-gradient-to-r from-purple-500 to-purple-700 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <div className="flex justify-between items-center px-4">
                                     <span>Join {gameState.teamNames.team1}</span>
                                     <span className="text-sm">
-                                        {team1Availability.filled}/{team1Availability.total}
+                                        {team1Count} {team1Count === 1 ? 'player' : 'players'}
                                     </span>
                                 </div>
                             </button>
 
                             <button
                                 onClick={() => joinTeam('team2')}
-                                disabled={isJoining || team2Availability.available === 0 || !playerName.trim()}
+                                disabled={isJoining || !playerName.trim()}
                                 className="w-full bg-gradient-to-r from-pink-500 to-pink-700 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <div className="flex justify-between items-center px-4">
                                     <span>Join {gameState.teamNames.team2}</span>
                                     <span className="text-sm">
-                                        {team2Availability.filled}/{team2Availability.total}
+                                        {team2Count} {team2Count === 1 ? 'player' : 'players'}
                                     </span>
                                 </div>
                             </button>
 
                             <button
                                 onClick={() => joinTeam('team3')}
-                                disabled={isJoining || team3Availability.available === 0 || !playerName.trim()}
+                                disabled={isJoining || !playerName.trim()}
                                 className="w-full bg-gradient-to-r from-orange-500 to-orange-700 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <div className="flex justify-between items-center px-4">
                                     <span>Join {gameState.teamNames.team3}</span>
                                     <span className="text-sm">
-                                        {team3Availability.filled}/{team3Availability.total}
+                                        {team3Count} {team3Count === 1 ? 'player' : 'players'}
                                     </span>
                                 </div>
                             </button>
@@ -419,7 +415,6 @@
             const [gameState, setGameState] = useState(null);
             const [isSetup, setIsSetup] = useState(true);
             const [teamNames, setTeamNames] = useState({ team1: '', team2: '', team3: '' });
-            const [playerCounts, setPlayerCounts] = useState({ team1: 3, team2: 3, team3: 3 });
             const [timer, setTimer] = useState(30);
             const [timerActive, setTimerActive] = useState(false);
             const [votes, setVotes] = useState({});
@@ -498,8 +493,7 @@
                     currentRound: 0,
                     currentQuestion: 0,
                     showAnswer: false,
-                    votingOpen: false,
-                    playerCounts
+                    votingOpen: false
                 };
 
                 await database.ref(`sessions/${sessionId}/game`).set(initialState);
@@ -537,13 +531,34 @@
                     : parseInt(winners[Math.floor(Math.random() * winners.length)]);
             };
 
-            const awardPoints = async (teamId) => {
-                const newScore = gameState.scores[teamId] + currentQuestion.points;
-                await database.ref(`sessions/${sessionId}/game/scores/${teamId}`).set(newScore);
-            };
-
             const revealAnswer = async () => {
                 await database.ref(`sessions/${sessionId}/game/showAnswer`).set(true);
+                
+                // Automatically award points to correct teams
+                const team1Answer = calculateTeamAnswer('team1');
+                const team2Answer = calculateTeamAnswer('team2');
+                const team3Answer = calculateTeamAnswer('team3');
+                
+                const updates = {};
+                
+                if (team1Answer === currentQuestion.correct) {
+                    const newScore = gameState.scores.team1 + currentQuestion.points;
+                    updates[`scores/team1`] = newScore;
+                }
+                
+                if (team2Answer === currentQuestion.correct) {
+                    const newScore = gameState.scores.team2 + currentQuestion.points;
+                    updates[`scores/team2`] = newScore;
+                }
+                
+                if (team3Answer === currentQuestion.correct) {
+                    const newScore = gameState.scores.team3 + currentQuestion.points;
+                    updates[`scores/team3`] = newScore;
+                }
+                
+                if (Object.keys(updates).length > 0) {
+                    await database.ref(`sessions/${sessionId}/game`).update(updates);
+                }
             };
 
             const nextQuestion = async () => {
@@ -574,7 +589,6 @@
                     setIsSetup(true);
                     setGameState(null);
                     setTeamNames({ team1: '', team2: '', team3: '' });
-                    setPlayerCounts({ team1: 3, team2: 3, team3: 3 });
                 }
             };
 
@@ -601,15 +615,6 @@
                                         onChange={(e) => setTeamNames(prev => ({ ...prev, team1: e.target.value }))}
                                         className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none"
                                     />
-                                    <label className="block text-sm font-semibold mt-2 mb-1">Number of players</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        max="10"
-                                        value={playerCounts.team1}
-                                        onChange={(e) => setPlayerCounts(prev => ({ ...prev, team1: parseInt(e.target.value) }))}
-                                        className="w-24 px-4 py-2 border-2 rounded-xl"
-                                    />
                                 </div>
                                 
                                 <div>
@@ -620,15 +625,6 @@
                                         onChange={(e) => setTeamNames(prev => ({ ...prev, team2: e.target.value }))}
                                         className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none"
                                     />
-                                    <label className="block text-sm font-semibold mt-2 mb-1">Number of players</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        max="10"
-                                        value={playerCounts.team2}
-                                        onChange={(e) => setPlayerCounts(prev => ({ ...prev, team2: parseInt(e.target.value) }))}
-                                        className="w-24 px-4 py-2 border-2 rounded-xl"
-                                    />
                                 </div>
                                 
                                 <div>
@@ -638,15 +634,6 @@
                                         value={teamNames.team3}
                                         onChange={(e) => setTeamNames(prev => ({ ...prev, team3: e.target.value }))}
                                         className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none"
-                                    />
-                                    <label className="block text-sm font-semibold mt-2 mb-1">Number of players</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        max="10"
-                                        value={playerCounts.team3}
-                                        onChange={(e) => setPlayerCounts(prev => ({ ...prev, team3: parseInt(e.target.value) }))}
-                                        className="w-24 px-4 py-2 border-2 rounded-xl"
                                     />
                                 </div>
                                 
@@ -824,7 +811,7 @@
                                 <img 
                                     src={currentQuestion.imageUrl} 
                                     alt="Quiz question"
-                                    className="max-w-full max-h-96 rounded-lg shadow-md"
+                                    className={`max-w-full max-h-96 rounded-lg shadow-md ${currentQuestion.cropTop ? 'image-crop-top h-96 w-auto' : ''}`}
                                 />
                             </div>
                         )}
@@ -947,24 +934,6 @@
 
                             {gameState.showAnswer && (
                                 <>
-                                    {team1Correct && (
-                                        <button onClick={() => awardPoints('team1')} className="px-6 py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700">
-                                            +{currentQuestion.points} {gameState.teamNames.team1}
-                                        </button>
-                                    )}
-                                    
-                                    {team2Correct && (
-                                        <button onClick={() => awardPoints('team2')} className="px-6 py-3 bg-pink-600 text-white rounded-xl font-bold hover:bg-pink-700">
-                                            +{currentQuestion.points} {gameState.teamNames.team2}
-                                        </button>
-                                    )}
-
-                                    {team3Correct && (
-                                        <button onClick={() => awardPoints('team3')} className="px-6 py-3 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-700">
-                                            +{currentQuestion.points} {gameState.teamNames.team3}
-                                        </button>
-                                    )}
-
                                     <button onClick={nextQuestion} className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:shadow-lg flex items-center gap-2">
                                         Next Question
                                         <lucide-icon name="chevron-right"></lucide-icon>
